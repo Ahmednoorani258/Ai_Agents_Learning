@@ -133,7 +133,7 @@ def demo_composition():
     print(f"Employee's name via person: {employee.person.name}")
     print(f"Employee's age via person: {employee.person.age}")
     print(f"Greeting: {employee.greet()}")
-    print(f"Working: {employee.work()}")
+    print(f"Working: {employee.work()}") 
     
     # Access person's attributes through the composition
     print(f"Person's email: {employee.person.email}")
