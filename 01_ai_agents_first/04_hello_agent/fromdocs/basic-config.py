@@ -53,8 +53,32 @@ agent2 = Agent(
     output_type=CalendarEvent,
 )
 # res = Runner.run_sync(agent2, "Schedule a meeting with John on 2023-10-01", run_config=config)
+# ____________
 
+# Handoffs
+# ____________
 
+booking_agent = Agent(
+    name="Booking Agent",
+    instructions="You are a helpful assistant that books appointments.",
+)
+
+refund_agent = Agent(
+    name="Refund Agent",
+    instructions="You are a helpful assistant that refunds appointments.",
+)
+
+triage_agent = Agent(
+    name="Triage Agent",
+    instructions=(
+        "Help the user with their questions."
+        "If they ask about booking, handoff to the booking agent."
+        "If they ask about refunds, handoff to the refund agent."
+    ),
+    handoffs=[booking_agent, refund_agent]
+)
+
+# res = Runner.run_sync(triage_agent,"I want to book an appointment",run_config=config)
 
 # @dataclass
 # class UserContext:
