@@ -1,13 +1,15 @@
 import sys
 import asyncio
-
 # ✅ Fix for Windows + Psycopg + asyncio
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 from setupconfig import config
 import os
 from dotenv import load_dotenv
-
+from langmem import create_manage_memory_tool, create_search_memory_tool
+from langmem_adapter import LangMemOpenAIAgentToolAdapter
+from pydantic import BaseModel
 from langmem import create_manage_memory_tool, create_search_memory_tool
 
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
@@ -44,9 +46,32 @@ async def get_store():
 async def setup_store():
     async with get_store() as store:
         await store.setup()
-    
+   
 
-namespace=("assistant", "collection")
+class UserInfo(BaseModel):
+  username: str
+
+namespace_template=("assistant", "{username}", "collection")
+
+
+# Initialize the manage memory tool dynamically:
+manage_adapter = LangMemOpenAIAgentToolAdapter(
+    lambda store, namespace=None: create_manage_memory_tool(namespace=namespace, store=store),
+    store_provider=get_store,
+    namespace_template=namespace_template
+)
+manage_memory_tool = manage_adapter.as_tool()
+
+# Initialize the search memory tool dynamically:
+search_adapter = LangMemOpenAIAgentToolAdapter(
+    lambda store, namespace=None: create_search_memory_tool(namespace=namespace, store=store),
+    store_provider=get_store,
+    namespace_template=namespace_template
+)
+search_memory_tool = search_adapter.as_tool()
+
+
+tools = [manage_memory_tool, search_memory_tool]
 
 agent_system_prompt_memory = """
 < Role >
@@ -62,52 +87,38 @@ You have access to the following tools to help manage Junaid's communications an
 
 """
 
-# Initialize the manage memory tool dynamically:
-manage_adapter = LangMemOpenAIAgentToolAdapter(
-    lambda store, namespace=None: create_manage_memory_tool(namespace=namespace, store=store),
-    store_provider=get_store,
-    namespace_template=namespace
-)
-manage_memory_tool = manage_adapter.as_tool()
 
-# Initialize the search memory tool dynamically:
-search_adapter = LangMemOpenAIAgentToolAdapter(
-    lambda store, namespace=None: create_search_memory_tool(namespace=namespace, store=store),
-    store_provider=get_store,
-    namespace_template=namespace
-)
-search_memory_tool = search_adapter.as_tool()
-
-tools= [
-    manage_memory_tool,
-    search_memory_tool
-]
-
-agent = Agent(
-    name="Assistant",
+response_agent = Agent[UserInfo](
+    name="Response agent",
     instructions=agent_system_prompt_memory,
-    tools=tools
-)
+    tools=tools,
 
-async def run_example(message: str):
-        
-    result = await Runner.run(
-        agent,
-        message,
-        run_config=config,
     )
-    print(result.final_output)
-    async with get_store() as store:
-        res = await store.asearch(namespace)
-        print("Memory Search Result:", res)
 
 async def main():
-    await setup_store()
-    await run_example("So we are building Memory Layer for AI Agent")
-    await run_example("Remember Ahmad is my Friend?")
-    await run_example("Who are my friends and what am I building?")
-    await run_example("It's not Ahmad who is my Friend instead Muhammad only?")
-    await run_example("Do you know who is my friend?")
+    res = await Runner.run(
+        response_agent,
+         "Remember We are building AI Agents to build Infra on Mars.",
+        context=UserInfo(username="Junaid"),
+        run_config=config
+    )
+    res = await Runner.run(
+        response_agent,
+        "What I told you about Mars",
+        context=UserInfo(username="Junaid"),
+        run_config=config
+    )
+    
+    print(res.final_output)
+    res = await Runner.run(
+        response_agent,
+        "What I told you about Mars",
+        context=UserInfo(username="Muhammad"),
+        run_config=config
+    )
+    
+    print(res.final_output)
     
 if __name__ == "__main__":
+    asyncio.run(setup_store())
     asyncio.run(main())
