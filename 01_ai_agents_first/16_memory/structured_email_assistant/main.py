@@ -9,12 +9,7 @@ from agents import (
 )
 from setupconfig import config
 import asyncio
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-os.environ["GOOGLE_API_KEY"] = GEMINI_API_KEY
 
 triage_agent = Agent(
     name="Triage Agent",

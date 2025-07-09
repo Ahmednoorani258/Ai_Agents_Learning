@@ -3,6 +3,12 @@ from langgraph.store.memory import InMemoryStore
 from contextlib import asynccontextmanager
 from langmem import create_manage_memory_tool, create_search_memory_tool
 from langmem_adapter import LangMemOpenAIAgentToolAdapter
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+os.environ["GOOGLE_API_KEY"] = GEMINI_API_KEY
 
 store = InMemoryStore(
       index={
