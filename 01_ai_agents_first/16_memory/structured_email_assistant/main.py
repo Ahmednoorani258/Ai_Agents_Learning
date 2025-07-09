@@ -16,18 +16,7 @@ triage_agent = Agent(
     instructions=system_prompt,
     output_type=Router
 )
-
-
 tools=[write_email, schedule_meeting, check_calendar_availability, manage_memory_tool, search_memory_tool]
-# async def run_triage_agent():
-#     triage_result = await Runner.run(triage_agent, user_prompt, run_config = config)
-#     print(triage_result.final_output.classification)
-#     print(triage_result.final_output.reasoning)
-    
-# if __name__ == "__main__":
-#     import asyncio
-#     asyncio.run(run_triage_agent())
-
 
 response_agent = Agent[UserInfo](
     name="Response agent",
