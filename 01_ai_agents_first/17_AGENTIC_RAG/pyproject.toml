@@ -1,0 +1,16 @@
+[project]
+name = "17-agentic-rag"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "chromadb>=1.0.15",
+    "google-genai>=1.25.0",
+    "langchain-community>=0.3.27",
+    "langchain-google-genai>=2.1.7",
+    "langchain-openai>=0.3.27",
+    "litellm>=1.74.2",
+    "openai-agents[litellm]>=0.1.0",
+    "pypdf>=5.7.0",
+]

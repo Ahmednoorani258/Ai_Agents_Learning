@@ -1,0 +1,1 @@
+uv add openai-agents langchain-community chromadb "openai-agents[litellm]" langchain-openai pypdf langchain-google-genai google-genai
