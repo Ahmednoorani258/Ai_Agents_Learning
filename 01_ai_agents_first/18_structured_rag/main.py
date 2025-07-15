@@ -9,7 +9,7 @@ from chroma_client import get_or_create_collection
 
 
 async def main_question():
-    question = "What do you know about the Apollo program?"
+    question = "What do you know about muhammd ahmed noornai?"
     result = await Runner.run(qa_agent, question, run_config=config)
     print("Answer:", result.final_output)
 
@@ -32,7 +32,7 @@ async def main_pdf():
     
     print(f"Added {len(documents)} pages.")
 
-    question = "Who is Muhammad Qasim?"
+    question = "Who is Muhammad Ahmed Noorani based on the uploaded CV?"
     result = await Runner.run(qa_agent, question, run_config=config)
     print("PDF Question Answer:", result.final_output)
 

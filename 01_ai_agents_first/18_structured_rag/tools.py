@@ -14,4 +14,7 @@ def answer_from_knowledge_base(query: str) -> str:
 
     top_doc = results["documents"][0][0]
     prompt = f"Context:\n{top_doc}\n\nQuestion:\n{query}\n\nAnswer the question using only the context above."
+    print("🔍 Query vector:", query_vector[:5])
+    print("📚 Results:", results)
+
     return generate_answer(prompt)
